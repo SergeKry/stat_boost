@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+from api.routes import default
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, World!"}
+app.include_router(default.router, prefix="/default", tags=["Default"])
