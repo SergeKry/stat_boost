@@ -8,5 +8,5 @@ router = APIRouter()
 @router.post("/update-expected")
 async def update_expected(db: AsyncSession = Depends(get_db)):
     """Triggers data collection from wargaming API"""
-    exp_values = await Service.get_all_tanks()
+    exp_values = await Service().update_expected_values(db)
     return exp_values
