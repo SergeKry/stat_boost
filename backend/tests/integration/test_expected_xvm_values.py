@@ -1,5 +1,5 @@
 import pytest
-from src.services.expected_values import ExpectedValuesService
+from services.expected_values import ExpectedValuesService
 
 @pytest.mark.asyncio
 async def test_collect_xvm_values():

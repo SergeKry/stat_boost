@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.api.routes import (default,
+from api.routes import (default,
                         expected_values,)
 
 app = FastAPI()

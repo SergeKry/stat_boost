@@ -9,6 +9,8 @@ services:
       - db
     ports:
       - "8000:8000"
+    environment:
+      - PYTHONPATH=/app/src
     env_file:
       - ./backend/.env
     volumes:

@@ -1,5 +1,5 @@
 import httpx
-from src.core.config import WARGAMING_API_KEY
+from core.config import WARGAMING_API_KEY
 
 class ExpectedValuesService:
     """Service class to fetch data from WG api and XVM api and update database with expected tank values"""

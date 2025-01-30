@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.core.database import get_db
-from src.services.expected_values import ExpectedValuesService as Service
+from core.database import get_db
+from services.expected_values import ExpectedValuesService as Service
 
 router = APIRouter()
 
