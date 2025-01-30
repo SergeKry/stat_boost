@@ -1,7 +1,7 @@
 import httpx
 
 class ExpectedValuesService:
-    """Service class to fetch data from WG api and XVN api and update database"""
+    """Service class to fetch data from WG api and XVM api and update database"""
 
     async def collect_values():
         """Fetch expected values from XVM API"""
