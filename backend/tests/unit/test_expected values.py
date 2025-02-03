@@ -7,6 +7,7 @@ from sqlalchemy.future import select
 
 @pytest.mark.asyncio
 class TestTankExpectedValues:
+    """Testing saving tanks list and updating their xvm values"""
     @pytest.fixture(autouse=True)
     async def setup_class(self, db_session: AsyncSession):
         """Set up reusable db session for the test class."""

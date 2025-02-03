@@ -1,0 +1,41 @@
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+# Ignore Virtual Environments
+venv/
+env/
+*.venv
+.Python
+
+# Ignore IDE and Editor Files
+.vscode/
+.idea/
+*.iml
+
+# Ignore Logs and Debug Files
+logs/
+*.log
+*.out
+debug.log
+
+# Ignore Environment Files (Security)
+.env
+*.env
+
+# Ignore OS-specific Files
+.DS_Store
+Thumbs.db
+
+# Ignore Local Alembic Migrations Cache
+migrations/versions/
+
+# Ignore Git-related Files
+.git/
+.gitignore
+
+# Ignore Docker Itself
+docker-compose.override.yml

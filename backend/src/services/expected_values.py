@@ -57,7 +57,6 @@ class ExpectedValuesService:
         tank.contour_icon = tank_data['images']['contour_icon']
         tank.big_icon = tank_data['images']['big_icon']
 
-        
     async def save_tanks_list(self, db: AsyncSession, tanks_list: dict):
         """Save all WG tanks in database"""
         counter = 0
@@ -82,8 +81,7 @@ class ExpectedValuesService:
                 counter += 1
         await db.commit()
         return counter
-
-
+    
     async def update_tanks_xvm(self, db:AsyncSession, expected_values: dict):
         counter = 0
         data = expected_values.get('data')
@@ -102,7 +100,6 @@ class ExpectedValuesService:
         await db.commit()
         return counter
             
-
     async def update_expected_values(self, db: AsyncSession):
         """Update all tanks list in DB and their expected values"""
         tanks_list = await self.get_all_tanks()
@@ -110,4 +107,9 @@ class ExpectedValuesService:
         expected_values = await self.collect_xvm_values()
         tanks_updated = await self.update_tanks_xvm(db, expected_values)
         return {"tanks_added": tanks_added, "tanks_updated": tanks_updated}
-                
+    
+    async def return_all_tanks(self, db:AsyncSession):
+        """Return all tanks and their expected values from database"""
+        result = await db.execute(select(Tank))
+        tanks_list = result.scalars().all()
+        return tanks_list

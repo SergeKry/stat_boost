@@ -15,6 +15,6 @@ class Tank(Base):
     exp_damage = Column(Float, nullable=True)
     exp_winrate = Column(Float, nullable=True)
     exp_frag = Column(Float, nullable=True)
-    small_icon = Column(String, nullable=True)  # URLField equivalent
-    contour_icon = Column(String, nullable=True)  # URLField equivalent
-    big_icon = Column(String, nullable=True)  # URLField equivalent
+    small_icon = Column(String, nullable=True)
+    contour_icon = Column(String, nullable=True)
+    big_icon = Column(String, nullable=True)
