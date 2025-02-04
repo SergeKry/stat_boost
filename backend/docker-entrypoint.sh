@@ -10,7 +10,7 @@ done
 echo 'Database is ready.'
 
 # Generate migrations if they don’t exist
-if [ ! -d "migrations/versions" ]; then
+if [ -d "migrations/versions" ] && [ -z "$(ls -A migrations/versions)" ]; then
   echo "⚠️ No migrations found! Generating migrations..."
   alembic revision --autogenerate -m "Initial migration"
 fi

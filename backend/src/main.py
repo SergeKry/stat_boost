@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import AsyncSession
+from core.database import get_db
 from api.routes import (default,
                         expected_values,)
 

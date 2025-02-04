@@ -3,15 +3,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from models.expected_values import Tank
 from services.expected_values import ExpectedValuesService
 from sqlalchemy.future import select
+from sqlalchemy import delete
 
 
 @pytest.mark.asyncio
 class TestTankExpectedValues:
     """Testing saving tanks list and updating their xvm values"""
     @pytest.fixture(autouse=True)
-    async def setup_class(self, db_session: AsyncSession):
+    async def setup_and_teardown(self, test_db_session: AsyncSession):
         """Set up reusable db session for the test class."""
-        self.db = db_session
+        self.db = test_db_session
         self.service = ExpectedValuesService()
 
         # Mock tanks_list
@@ -64,11 +65,20 @@ class TestTankExpectedValues:
         ]
         }
 
+        yield  # Run the tests
+
+        # Cleanup after all tests in this class
+        await self.db.execute(delete(Tank))
+        await self.db.commit()
+
             
     async def test_save_tanks_list(self):
         """Test saving a list of tanks to the database."""
 
         added_count = await self.service.save_tanks_list(self.db, self.tanks_list)
+
+        result = await self.db.execute(select(Tank))
+        all_tanks = result.scalars().all()
 
         assert added_count == 2  # Expect 2 tanks to be added
 
@@ -87,8 +97,12 @@ class TestTankExpectedValues:
         assert t14.tier == 5
 
     async def test_update_tanks_xvm_values(self):
-        added_count = await self.service.update_tanks_xvm(self.db, self.xvm_values)
-        assert added_count == 2
+        """Test updating XVM values for existing tanks"""
+
+        await self.service.save_tanks_list(self.db, self.tanks_list) # add tanks in db
+        
+        updated_count = await self.service.update_tanks_xvm(self.db, self.xvm_values)
+        assert updated_count == 2
 
         result = await self.db.execute(select(Tank))
         all_tanks = result.scalars().all()

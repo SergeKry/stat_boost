@@ -32,6 +32,7 @@ Thumbs.db
 
 # Ignore Local Alembic Migrations Cache
 migrations/versions/
+migrations/versions/__pycache__/
 
 # Ignore Git-related Files
 .git/

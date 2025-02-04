@@ -5,6 +5,7 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from core.database import Base, get_db
+from main import app
 
 # Ensure that src/ is in Python's path
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,4 +27,12 @@ async def db_session():
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)  # Create tables
         yield session  # Provide session to test
+        await session.rollback() # Rollback changes after test
         await session.close()
+
+@pytest.fixture(scope="function")
+async def test_db_session(db_session):
+    """Override FastAPI's database dependency with the test database."""
+    app.dependency_overrides[get_db] = lambda: db_session
+    yield db_session
+    app.dependency_overrides.clear()  # Remove override after test
