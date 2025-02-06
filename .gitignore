@@ -84,3 +84,25 @@ npm-debug.log*
 # Mac & Windows system files
 .DS_Store
 Thumbs.db
+
+# React-specific files
+frontend/my-app/node_modules/
+frontend/my-app/build/
+frontend/my-app/.cache/
+frontend/my-app/.parcel-cache/
+frontend/my-app/.next/
+frontend/my-app/.turbo/
+
+# Package lock files (if using multiple package managers)
+frontend/my-app/pnpm-lock.yaml
+frontend/my-app/yarn.lock
+frontend/my-app/package-lock.json
+
+# React testing & coverage files
+frontend/my-app/coverage/
+frontend/my-app/junit.xml
+frontend/my-app/.jest/
+frontend/my-app/.eslintcache
+
+# VS Code settings for frontend
+frontend/my-app/.vscode/
