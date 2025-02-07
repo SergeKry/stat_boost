@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAllTanks } from "../api/tankApi";
 
-export const useTanks = (page = 1, limit = 50) => {
+export const useTanks = (page = 1, limit = 50, sortBy = "wg_tank_id", order = "asc") => {
   const [tanks, setTanks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -10,7 +10,7 @@ export const useTanks = (page = 1, limit = 50) => {
   useEffect(() => {
     const fetchTanks = async () => {
       try {
-        const data = await getAllTanks(page, limit);
+        const data = await getAllTanks(page, limit, sortBy, order);
         setTanks(data.data);
         setTotalPages(data.total_pages);
       } catch (err) {
@@ -21,7 +21,7 @@ export const useTanks = (page = 1, limit = 50) => {
     };
 
     fetchTanks();
-  }, [page, limit]);
+  }, [page, limit, sortBy, order]);
 
   return { tanks, loading, error, totalPages };
 };

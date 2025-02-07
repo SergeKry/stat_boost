@@ -1,7 +1,6 @@
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc
-from sqlalchemy import func
+from sqlalchemy import select, asc, desc, func
 from core.config import WARGAMING_API_KEY
 from models.expected_values import Tank
 
@@ -109,10 +108,16 @@ class ExpectedValuesService:
         tanks_updated = await self.update_tanks_xvm(db, expected_values)
         return {"tanks_added": tanks_added, "tanks_updated": tanks_updated}
     
-    async def return_all_tanks(self, db: AsyncSession, page: int, limit: int):
+    async def return_all_tanks(self, db: AsyncSession, page: int, limit: int, sort_by: str, order: str):
         """Return all tanks and their expected values from database"""
         offset = (page - 1) * limit
-        result = await db.execute(select(Tank).order_by(asc(Tank.wg_tank_id)).offset(offset).limit(limit))
+        allowed_fields = {"name", "tier", "nation", "type", "exp_def", "exp_spot", "exp_damage", "exp_winrate", "exp_frag", "wg_tank_id"}
+        if sort_by not in allowed_fields:
+            sort_by = "wg_tank_id"
+
+        order_by_clause = asc(getattr(Tank, sort_by)) if order == "asc" else desc(getattr(Tank, sort_by))
+
+        result = await db.execute(select(Tank).order_by(order_by_clause).offset(offset).limit(limit))
         tanks_list = result.scalars().all()
 
         total_count_result = await db.execute(select(func.count()).select_from(Tank))

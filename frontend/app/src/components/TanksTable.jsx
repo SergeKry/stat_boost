@@ -1,22 +1,44 @@
 import { useState } from "react";
 import { useTanks } from "../hooks/useTanks";
-import TableContainer from "@mui/material/TableContainer";
-import Paper from "@mui/material/Paper";
-import Table from "@mui/material/Table";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import TableBody from "@mui/material/TableBody";
-import Skeleton from "@mui/material/Skeleton";
-import Pagination from "@mui/material/Pagination";
+import {
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Skeleton,
+  Pagination,
+  TableSortLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 const TanksTable = () => {
   const [page, setPage] = useState(1);
-  const { tanks, loading, error, totalPages } = useTanks(page, 50);
+  const [sortBy, setSortBy] = useState("wg_tank_id");
+  const [order, setOrder] = useState("asc");
+
+  const { tanks, loading, error, totalPages } = useTanks(
+    page,
+    50,
+    sortBy,
+    order
+  );
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
-    window.scrollTo({ top:0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSortChange = (newSortBy) => {
+    if (sortBy === newSortBy) {
+      setOrder(order === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(newSortBy);
+      setOrder("asc");
+    }
   };
 
   if (error) return <p>Error: {error}</p>;
@@ -27,17 +49,90 @@ const TanksTable = () => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Tank Name</TableCell>
-            <TableCell>Nation</TableCell>
-            <TableCell>Tier</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>expDef</TableCell>
-            <TableCell>expSpot</TableCell>
-            <TableCell>expDmg</TableCell>
-            <TableCell>expWin</TableCell>
-            <TableCell>expFrag</TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "name"}
+                direction={order}
+                onClick={() => handleSortChange("name")}
+              >
+                Tank Name
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "nation"}
+                direction={order}
+                onClick={() => handleSortChange("nation")}
+              >
+                Nation
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "tier"}
+                direction={order}
+                onClick={() => handleSortChange("tier")}
+              >
+                Tier
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "type"}
+                direction={order}
+                onClick={() => handleSortChange("type")}
+              >
+                Type
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "exp_def"}
+                direction={order}
+                onClick={() => handleSortChange("exp_def")}
+              >
+                expDef
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "exp_spot"}
+                direction={order}
+                onClick={() => handleSortChange("exp_spot")}
+              >
+                expSpot
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "exp_damage"}
+                direction={order}
+                onClick={() => handleSortChange("exp_damage")}
+              >
+                expDmg
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "exp_winrate"}
+                direction={order}
+                onClick={() => handleSortChange("exp_winrate")}
+              >
+                expWin
+              </TableSortLabel>
+            </TableCell>
+            <TableCell>
+              <TableSortLabel
+                active={sortBy === "exp_frag"}
+                direction={order}
+                onClick={() => handleSortChange("exp_frag")}
+              >
+                expFrag
+              </TableSortLabel>
+            </TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
           {loading
             ? [...Array(5)].map((_, index) => (
@@ -57,28 +152,10 @@ const TanksTable = () => {
                   <TableCell>
                     <Skeleton variant="text" width={80} />
                   </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" width={60} />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" width={60} />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" width={60} />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" width={60} />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton variant="text" width={60} />
-                  </TableCell>
                 </TableRow>
               ))
             : tanks.map((tank) => (
-                <TableRow
-                  key={tank.id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
+                <TableRow key={tank.id}>
                   <TableCell>
                     <img src={tank.small_icon} alt={tank.name} />
                   </TableCell>
@@ -95,6 +172,8 @@ const TanksTable = () => {
               ))}
         </TableBody>
       </Table>
+
+      {/* ✅ Pagination Component */}
       <Pagination
         count={totalPages}
         page={page}
