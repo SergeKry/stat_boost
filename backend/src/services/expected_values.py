@@ -1,13 +1,13 @@
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from sqlalchemy import select, asc
 from core.config import WARGAMING_API_KEY
 from models.expected_values import Tank
 
 
 class ExpectedValuesService:
     """Service class to fetch data from WG api and XVM api and update database with expected tank values"""
-    xvm_expected_url = 'https://static.modxvm.com/wn8-data-exp/json/wn8exp.json'
+    xvm_expected_url = 'https://static.modxvm.com/wn8-data-exp/json/wg/wn8exp.json'
     wg_vehicles_url = 'https://api.worldoftanks.eu/wot/encyclopedia/vehicles/'
 
     async def collect_xvm_values(self):
@@ -110,6 +110,6 @@ class ExpectedValuesService:
     
     async def return_all_tanks(self, db:AsyncSession):
         """Return all tanks and their expected values from database"""
-        result = await db.execute(select(Tank))
+        result = await db.execute(select(Tank).order_by(asc(Tank.wg_tank_id)))
         tanks_list = result.scalars().all()
         return tanks_list

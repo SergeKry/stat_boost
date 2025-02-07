@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   AppBar,
   Toolbar,
@@ -11,11 +12,11 @@ import {
   CssBaseline,
   IconButton,
   Box,
+  ButtonBase,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
-import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -25,6 +26,11 @@ const Layout = ({ children }) => {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const navItems = [
+    { text: "Home", icon: <HomeIcon />, link: "/" },
+    { text: "Vehicles", icon: <InfoIcon />, link: "/vehicles" },
+  ];
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -66,24 +72,23 @@ const Layout = ({ children }) => {
       >
         <Toolbar />
         <List>
-          <ListItem button>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
-            <ListItemText primary="Home" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <InfoIcon />
-            </ListItemIcon>
-            <ListItemText primary="About" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Settings" />
-          </ListItem>
+          {navItems.map((item) => (
+            <ListItem key={item.text}>
+              <ButtonBase
+                component={Link}
+                to={item.link}
+                sx={{
+                  width: "100%",
+                  textAlign: "left",
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                <ListItemIcon>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ButtonBase>
+            </ListItem>
+          ))}
         </List>
       </Drawer>
 
@@ -93,7 +98,7 @@ const Layout = ({ children }) => {
         sx={{
           flexGrow: 1,
           p: 3,
-          marginLeft: open ? `${drawerWidth}px` : 0,
+          marginLeft: !open ? `-${drawerWidth}px` : 0,
           transition: "margin 0.3s ease-in-out",
         }}
       >
