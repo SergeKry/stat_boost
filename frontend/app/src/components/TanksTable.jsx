@@ -1,5 +1,5 @@
+import { useState } from "react";
 import { useTanks } from "../hooks/useTanks";
-import { CircularProgress, List, ListItem, ListItemText } from "@mui/material";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -8,9 +8,16 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
 import Skeleton from "@mui/material/Skeleton";
+import Pagination from "@mui/material/Pagination";
 
 const TanksTable = () => {
-  const { tanks, loading, error } = useTanks();
+  const [page, setPage] = useState(1);
+  const { tanks, loading, error, totalPages } = useTanks(page, 50);
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top:0, behavior: "smooth" });
+  };
 
   if (error) return <p>Error: {error}</p>;
 
@@ -88,6 +95,13 @@ const TanksTable = () => {
               ))}
         </TableBody>
       </Table>
+      <Pagination
+        count={totalPages}
+        page={page}
+        onChange={handlePageChange}
+        color="primary"
+        sx={{ mt: 2, display: "flex", justifyContent: "center" }}
+      />
     </TableContainer>
   );
 };
