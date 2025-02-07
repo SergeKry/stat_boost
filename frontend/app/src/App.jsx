@@ -1,11 +1,18 @@
 import Layout from "./components/Layout";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import TanksList from "./pages/TanksList"
 
 function App() {
   return (
-    <Layout>
-      <h1>Welcome to My App</h1>
-      <p>This is the main content area.</p>
-    </Layout>
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/vehicles" element={<TanksList />} />
+        </Routes>
+      </Layout>
+    </Router>
   );
 }
 
