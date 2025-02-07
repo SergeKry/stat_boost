@@ -1,6 +1,7 @@
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, asc
+from sqlalchemy import func
 from core.config import WARGAMING_API_KEY
 from models.expected_values import Tank
 
@@ -108,8 +109,19 @@ class ExpectedValuesService:
         tanks_updated = await self.update_tanks_xvm(db, expected_values)
         return {"tanks_added": tanks_added, "tanks_updated": tanks_updated}
     
-    async def return_all_tanks(self, db:AsyncSession):
+    async def return_all_tanks(self, db: AsyncSession, page: int, limit: int):
         """Return all tanks and their expected values from database"""
-        result = await db.execute(select(Tank).order_by(asc(Tank.wg_tank_id)))
+        offset = (page - 1) * limit
+        result = await db.execute(select(Tank).order_by(asc(Tank.wg_tank_id)).offset(offset).limit(limit))
         tanks_list = result.scalars().all()
-        return tanks_list
+
+        total_count_result = await db.execute(select(func.count()).select_from(Tank))
+        total_count = total_count_result.scalar()
+
+        return {
+            "page": page,
+            "limit": limit,
+            "total_tanks": total_count,
+            "total_pages": (total_count + limit - 1) // limit,
+            "data": tanks_list,
+        }

@@ -43,7 +43,7 @@ class TestGetTanks:
         response = self.client.get("/expected-values/")
 
         assert response.status_code == 200
-        response_data = response.json()
+        response_data = response.json()["data"]
 
         assert len(response_data) == 2  
 
@@ -56,3 +56,16 @@ class TestGetTanks:
         assert response_dict[33]["name"] == "T14"
         assert response_dict[33]["nation"] == "usa"
         assert response_dict[33]["tier"] == 5
+
+    async def test_get_tanks_list_pagination(self):
+        """Test pagination of get all tanks endpoint"""
+        response = self.client.get("/expected-values/")
+
+        assert response.status_code == 200
+        response_data = response.json()
+
+        assert response_data["page"] == 1
+        assert response_data["limit"] == 50
+        assert response_data["total_tanks"] == 2
+        assert response_data["total_pages"] == 1
+        assert "data" in response_data

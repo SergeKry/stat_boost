@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 from services.expected_values import ExpectedValuesService as Service
-from schemas.expected_values import TankResponse
+from schemas.expected_values import PaginatedTanksResponse
 
 router = APIRouter()
 
@@ -12,7 +12,11 @@ async def update_expected(db: AsyncSession = Depends(get_db)):
     exp_values = await Service().update_expected_values(db)
     return exp_values
 
-@router.get("/", response_model=list[TankResponse])
-async def get_expected(db: AsyncSession = Depends(get_db)):
+@router.get("/", response_model=PaginatedTanksResponse)
+async def get_expected(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, le=100),
+    db: AsyncSession = Depends(get_db),
+    ):
     """Returns list of tanks in db and their expected values"""
-    return await Service().return_all_tanks(db)
+    return await Service().return_all_tanks(db, page, limit)
