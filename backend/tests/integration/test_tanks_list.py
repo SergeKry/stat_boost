@@ -10,6 +10,8 @@ from sqlalchemy import delete
 class TestGetTanks:
     """Class to test GET endpoint for retrieving tanks"""
 
+    edpoint_url = "/expected-values/"
+
     @pytest.fixture(autouse=True)
     async def setup_class(self, test_db_session: AsyncSession):
         """Setup test data once for all test methods"""
@@ -40,7 +42,7 @@ class TestGetTanks:
 
     async def test_get_tanks_list(self):
         """Test fetching all tanks via GET request"""
-        response = self.client.get("/expected-values/")
+        response = self.client.get(self.edpoint_url)
 
         assert response.status_code == 200
         response_data = response.json()["data"]
@@ -59,7 +61,7 @@ class TestGetTanks:
 
     async def test_get_tanks_list_pagination(self):
         """Test pagination of get all tanks endpoint"""
-        response = self.client.get("/expected-values/")
+        response = self.client.get(self.edpoint_url)
 
         assert response.status_code == 200
         response_data = response.json()
@@ -69,3 +71,11 @@ class TestGetTanks:
         assert response_data["total_tanks"] == 2
         assert response_data["total_pages"] == 1
         assert "data" in response_data
+
+    async def test_get_tanks_list_sorting(self):
+        response = self.client.get(f"{self.edpoint_url}?sort_by=name")
+
+        assert response.status_code == 200
+        response_data = response.json()["data"]
+
+        assert response_data[0]["name"] == "T-34"
