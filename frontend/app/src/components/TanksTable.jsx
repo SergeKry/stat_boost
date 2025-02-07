@@ -11,8 +11,6 @@ import {
   Skeleton,
   Pagination,
   TableSortLabel,
-  Select,
-  MenuItem,
 } from "@mui/material";
 
 const TanksTable = () => {
