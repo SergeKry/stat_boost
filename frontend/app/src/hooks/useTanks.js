@@ -1,16 +1,29 @@
 import { useState, useEffect } from "react";
 import { getAllTanks } from "../api/tankApi";
 
-export const useTanks = (page = 1, limit = 50, sortBy = "wg_tank_id", order = "asc") => {
+export const useTanks = (page = 1, limit = 50, sortBy = "name", order = "asc", search = "") => {
   const [tanks, setTanks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [debouncedSearch, setDebouncedSearch] = useState(search);
 
+
+  // Apply delay 1 sec before search starts
+  useEffect(() => {
+    const handler = setTimeout(() => {
+        setDebouncedSearch(search);
+    }, 1000);
+
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Fetch data
   useEffect(() => {
     const fetchTanks = async () => {
       try {
-        const data = await getAllTanks(page, limit, sortBy, order);
+        setLoading(true);
+        const data = await getAllTanks(page, limit, sortBy, order, debouncedSearch);
         setTanks(data.data);
         setTotalPages(data.total_pages);
       } catch (err) {
@@ -21,7 +34,7 @@ export const useTanks = (page = 1, limit = 50, sortBy = "wg_tank_id", order = "a
     };
 
     fetchTanks();
-  }, [page, limit, sortBy, order]);
+  }, [page, limit, sortBy, order, debouncedSearch]);
 
   return { tanks, loading, error, totalPages };
 };

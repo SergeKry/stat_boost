@@ -11,18 +11,21 @@ import {
   Skeleton,
   Pagination,
   TableSortLabel,
+  TextField
 } from "@mui/material";
 
 const TanksTable = () => {
   const [page, setPage] = useState(1);
   const [sortBy, setSortBy] = useState("wg_tank_id");
   const [order, setOrder] = useState("asc");
+  const [search, setSearch] = useState("");
 
   const { tanks, loading, error, totalPages } = useTanks(
     page,
     50,
     sortBy,
-    order
+    order,
+    search
   );
 
   const handlePageChange = (event, newPage) => {
@@ -39,10 +42,19 @@ const TanksTable = () => {
     }
   };
 
-  if (error) return <p>Error: {error}</p>;
-
   return (
     <TableContainer component={Paper}>
+      {/* Search Input */}
+      <TextField
+        label="Search by tank name"
+        variant="outlined"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        sx={{ m: 2 }}
+      />
+
+      {error && <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>}
+
       <Table aria-label="vehicles table">
         <TableHead>
           <TableRow>
@@ -171,7 +183,7 @@ const TanksTable = () => {
         </TableBody>
       </Table>
 
-      {/* ✅ Pagination Component */}
+      {/* Pagination Component */}
       <Pagination
         count={totalPages}
         page={page}

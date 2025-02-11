@@ -1,7 +1,7 @@
 import apiClient from "./apiClient";
 
-export const getAllTanks = async (page = 1, limit = 50, sortBy = "wg_tank_id", order = "asc") => {
-    const response = await apiClient.get(`/expected-values/?page=${page}&limit=${limit}&sort_by=${sortBy}&order=${order}`);
+export const getAllTanks = async (page = 1, limit = 50, sortBy = "wg_tank_id", order = "asc", search = "") => {
+    const response = await apiClient.get(`/expected-values/?page=${page}&limit=${limit}&sort_by=${sortBy}&order=${order}&search=${search}`);
     return response.data;
 };
 

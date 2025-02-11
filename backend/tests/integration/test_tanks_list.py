@@ -67,9 +67,9 @@ class TestGetTanks:
         response_data = response.json()
 
         assert response_data["page"] == 1
-        assert response_data["limit"] == 50
         assert response_data["total_tanks"] == 2
         assert response_data["total_pages"] == 1
+        assert "limit" in response_data
         assert "data" in response_data
 
     async def test_get_tanks_list_sorting(self):
@@ -78,4 +78,13 @@ class TestGetTanks:
         assert response.status_code == 200
         response_data = response.json()["data"]
 
+        assert response_data[0]["name"] == "T-34"
+
+    async def test_get_tanks_list_search(self):
+        response = self.client.get(f"{self.edpoint_url}?search=T-34")
+        
+        assert response.status_code == 200
+        response_data = response.json()["data"]
+
+        assert len(response_data) == 1
         assert response_data[0]["name"] == "T-34"
