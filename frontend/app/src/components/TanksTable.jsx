@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useTanks } from "../hooks/useTanks";
+import { useUpdateTanks } from "../hooks/useUpdateTanks";
 import {
   TableContainer,
+  Box,
   Paper,
   Table,
   TableHead,
@@ -11,7 +13,9 @@ import {
   Skeleton,
   Pagination,
   TableSortLabel,
-  TextField
+  TextField,
+  Button,
+  CircularProgress
 } from "@mui/material";
 
 const TanksTable = () => {
@@ -19,14 +23,19 @@ const TanksTable = () => {
   const [sortBy, setSortBy] = useState("wg_tank_id");
   const [order, setOrder] = useState("asc");
   const [search, setSearch] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   const { tanks, loading, error, totalPages } = useTanks(
     page,
     50,
     sortBy,
     order,
-    search
+    search,
+    refreshTrigger
   );
+
+  const { updateTanks, updateLoading, updateError, updateSuccess} = useUpdateTanks();
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -42,16 +51,30 @@ const TanksTable = () => {
     }
   };
 
+  const handleUpdateTanks = async () => {
+    setIsUpdating(true);
+    await updateTanks();
+    setIsUpdating(false);
+    setRefreshTrigger(prev => !prev)
+  };
+
   return (
     <TableContainer component={Paper}>
-      {/* Search Input */}
-      <TextField
-        label="Search by tank name"
-        variant="outlined"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        sx={{ m: 2 }}
-      />
+        <Box sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p:2,
+        }}>
+            <TextField
+            label="Search by tank name"
+            variant="outlined"
+            size="small"
+            value={search} 
+            onChange={(e) => setSearch(e.target.value)}
+            />
+            <Button variant="contained" color="primary" size="large" onClick={handleUpdateTanks} disabled={isUpdating}>{isUpdating ? <CircularProgress size={24} /> : "Update Tanks"}</Button>
+        </Box>
 
       {error && <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>}
 

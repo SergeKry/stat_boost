@@ -1,17 +1,18 @@
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
-    // palette: {
-    //   primary: {
-    //     main: "#1976d2", // Change primary color
-    //   },
-    //   secondary: {
-    //     main: "#d32f2f", // Change secondary color
-    //   },
-    // },
-    // typography: {
-    //   fontFamily: "Roboto, sans-serif",
-    // },
+  components: {
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          "& th": {
+            fontWeight: "bold",
+            backgroundColor: "#d5d8dc",
+          },
+        },
+      },
+    },
+  },
   });
   
   export default theme;
