@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   AppBar,
@@ -21,7 +21,13 @@ import InfoIcon from "@mui/icons-material/Info";
 const drawerWidth = 240;
 
 const Layout = ({ children }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => {
+    return JSON.parse(localStorage.getItem("sidebarOpen")) || false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("sidebarOpen", JSON.stringify(open));
+  }, [open]);
 
   const toggleDrawer = () => {
     setOpen(!open);

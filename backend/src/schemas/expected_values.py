@@ -1,5 +1,6 @@
 from pydantic import BaseModel, HttpUrl
-from typing import Optional
+from typing import List, Optional
+
 
 class TankBase(BaseModel):
     name: str
@@ -16,8 +17,17 @@ class TankBase(BaseModel):
     contour_icon: Optional[HttpUrl] = None
     big_icon: Optional[HttpUrl] = None
 
+
 class TankResponse(TankBase):
     id: int
     
     class Config:
         orm_mode = True 
+
+
+class PaginatedTanksResponse(BaseModel):
+    page: int
+    limit: int
+    total_tanks: int
+    total_pages: int
+    data: List[TankResponse]
