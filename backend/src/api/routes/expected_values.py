@@ -9,8 +9,8 @@ router = APIRouter()
 @router.post("/")
 async def update_expected(db: AsyncSession = Depends(get_db)):
     """Triggers data collection from wargaming API"""
-    exp_values = await Service().update_expected_values(db)
-    return exp_values
+    tanks_updated = await Service().update_expected_values(db)
+    return {"message": tanks_updated}
 
 @router.get("/", response_model=PaginatedTanksResponse)
 async def get_expected(
