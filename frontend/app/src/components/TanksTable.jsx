@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTanks } from "../hooks/useTanks";
 import { useUpdateTanks } from "../hooks/useUpdateTanks";
 import {
@@ -15,7 +15,9 @@ import {
   TableSortLabel,
   TextField,
   Button,
-  CircularProgress
+  CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 const TanksTable = () => {
@@ -25,6 +27,7 @@ const TanksTable = () => {
   const [search, setSearch] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const { tanks, loading, error, totalPages } = useTanks(
     page,
@@ -35,7 +38,19 @@ const TanksTable = () => {
     refreshTrigger
   );
 
-  const { updateTanks, updateLoading, updateError, updateSuccess} = useUpdateTanks();
+  const {
+    updateTanks,
+    updateLoading,
+    updateError,
+    updateSuccess,
+    updateMessage,
+  } = useUpdateTanks();
+
+  useEffect(() => {
+    if (updateSuccess) {
+      setSnackbarOpen(true);
+    }
+  }, [updateSuccess]);
 
   const handlePageChange = (event, newPage) => {
     setPage(newPage);
@@ -55,28 +70,52 @@ const TanksTable = () => {
     setIsUpdating(true);
     await updateTanks();
     setIsUpdating(false);
-    setRefreshTrigger(prev => !prev)
+    setRefreshTrigger((prev) => !prev);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
   };
 
   return (
     <TableContainer component={Paper}>
-        <Box sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            p:2,
-        }}>
-            <TextField
-            label="Search by tank name"
-            variant="outlined"
-            size="small"
-            value={search} 
-            onChange={(e) => setSearch(e.target.value)}
-            />
-            <Button variant="contained" color="primary" size="large" onClick={handleUpdateTanks} disabled={isUpdating}>{isUpdating ? <CircularProgress size={24} /> : "Update Tanks"}</Button>
-        </Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          p: 2,
+        }}
+      >
+        <TextField
+          label="Search by tank name"
+          variant="outlined"
+          size="small"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={handleUpdateTanks}
+          disabled={isUpdating}
+        >
+          {isUpdating ? <CircularProgress size={24} /> : "Update Tanks"}
+        </Button>
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={4000}
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        >
+            {updateMessage}
+        </Snackbar>
+      </Box>
 
-      {error && <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>}
+      {error && (
+        <p style={{ color: "red", textAlign: "center" }}>Error: {error}</p>
+      )}
 
       <Table aria-label="vehicles table">
         <TableHead>
