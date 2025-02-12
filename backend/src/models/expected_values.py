@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, DateTime, func
 from core.database import Base
 
 class Tank(Base):
@@ -18,3 +18,5 @@ class Tank(Base):
     small_icon = Column(String, nullable=True)
     contour_icon = Column(String, nullable=True)
     big_icon = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
