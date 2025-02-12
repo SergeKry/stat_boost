@@ -8,7 +8,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from core.database import Base, engine
-from models import expected_values
+from models import (
+    expected_values,
+    players,
+    )
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
