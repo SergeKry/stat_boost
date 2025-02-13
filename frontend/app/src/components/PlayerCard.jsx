@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
 import { Card, CardContent, CardHeader, CardActionArea, IconButton } from "@mui/material";
@@ -7,9 +8,14 @@ import PlayerDeleteDialog from "./PlayerDeleteDialog";
 
 function PlayerCard({ player, setRefreshTrigger }) {
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleCardClick = () => {
+    navigate("/player-details", { state: { player } });
+  };
 
   return (
     <>
@@ -25,7 +31,7 @@ function PlayerCard({ player, setRefreshTrigger }) {
         <CardHeader action={<IconButton onClick={handleOpen} aria-label="delete">
           <CloseIcon />
         </IconButton>} />
-        <CardActionArea>
+        <CardActionArea onClick={handleCardClick}>
           <CardContent
             sx={{
               display: "flex",
