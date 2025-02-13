@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 
 function PlayerCreateCard() {
   return (
-    <Card sx={{ minWidth: 150, maxWidth: 200 }}>
+    <Card sx={{ minWidth: 200, height: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
       <CardContent
         sx={{
           display: "flex",
