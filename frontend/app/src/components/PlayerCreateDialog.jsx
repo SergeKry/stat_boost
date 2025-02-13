@@ -11,13 +11,21 @@ import {
   Box,
   Typography,
   CircularProgress,
+  Snackbar,
 } from "@mui/material";
 import useWgPlayerSearch from "../hooks/useWgPlayerSearch";
+import useCreatePlayer from "../hooks/useCreatePlayer";
 
-function PlayerCreateDialog({ open, handleClose }) {
+function PlayerCreateDialog({ open, handleClose, setRefreshTrigger }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const { players, loading, setPlayers } = useWgPlayerSearch(searchQuery);
+  const {
+    addPlayer,
+    loading: addingPlayer,
+    successMessage,
+    setSuccessMessage,
+  } = useCreatePlayer();
 
   useEffect(() => {
     if (open) {
@@ -27,10 +35,15 @@ function PlayerCreateDialog({ open, handleClose }) {
     }
   }, [open]);
 
+  const handleCloseDialog = () => {
+    handleClose();
+    setSuccessMessage("");
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleCloseDialog}
       maxWidth="sm"
       fullWidth
       sx={{
@@ -83,13 +96,27 @@ function PlayerCreateDialog({ open, handleClose }) {
           Cancel
         </Button>
         <Button
-          onClick={handleClose}
+          onClick={() =>
+            addPlayer(selectedPlayer, () => {
+              handleCloseDialog();
+              setRefreshTrigger((prev) => !prev);
+            })
+          }
           variant="contained"
-          disabled={!selectedPlayer}
+          disabled={!selectedPlayer || addingPlayer}
         >
-          Add
+          {addingPlayer ? <CircularProgress size={24} /> : "Add"}
         </Button>
       </DialogActions>
+
+      {/* ✅ Success Snackbar */}
+      <Snackbar
+        open={!!successMessage}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMessage("")}
+        message={successMessage}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      />
     </Dialog>
   );
 }

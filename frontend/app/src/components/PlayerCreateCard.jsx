@@ -3,7 +3,7 @@ import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
 import { useState } from "react";
 import PlayerCreateDialog from "./PlayerCreateDialog";
 
-function PlayerCreateCard() {
+function PlayerCreateCard({ setRefreshTrigger }) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -39,7 +39,7 @@ function PlayerCreateCard() {
       </Card>
 
       {/* 🔹 Dialog Component */}
-      <PlayerCreateDialog open={open} handleClose={handleClose} />
+      <PlayerCreateDialog open={open} handleClose={handleClose} setRefreshTrigger={setRefreshTrigger}/>
     </>
   );
 }
