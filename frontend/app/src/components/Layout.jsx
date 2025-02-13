@@ -17,6 +17,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
+import PeopleIcon from '@mui/icons-material/People';
 
 const drawerWidth = 240;
 
@@ -34,7 +35,7 @@ const Layout = ({ children }) => {
   };
 
   const navItems = [
-    { text: "Home", icon: <HomeIcon />, link: "/" },
+    { text: "Players", icon: <PeopleIcon />, link: "/" },
     { text: "Vehicles", icon: <InfoIcon />, link: "/vehicles" },
   ];
 
