@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardActionArea, IconButton } from "@mui/
 import CloseIcon from "@mui/icons-material/Close";
 import PlayerDeleteDialog from "./PlayerDeleteDialog";
 
-function PlayerCard({ player }) {
+function PlayerCard({ player, setRefreshTrigger }) {
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -51,6 +51,7 @@ function PlayerCard({ player }) {
         open={open}
         handleClose={handleClose}
         player={player}
+        setRefreshTrigger={setRefreshTrigger}
       />
     </>
   );

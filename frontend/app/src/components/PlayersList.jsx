@@ -3,7 +3,7 @@ import { Box, CircularProgress } from "@mui/material";
 import PlayerCard from "./PlayerCard";
 import { useGetPlayers } from "../hooks/useGetPlayers";
 
-function PlayersList({ refreshTrigger }) {
+function PlayersList({ refreshTrigger, setRefreshTrigger }) {
   const { players, loading, error } = useGetPlayers(refreshTrigger);
 
   if (loading) {
@@ -21,7 +21,7 @@ function PlayersList({ refreshTrigger }) {
   return (
     <>
       {players.map((player) => (
-        <PlayerCard key={player.id} player={player} />
+        <PlayerCard key={player.id} player={player} setRefreshTrigger={setRefreshTrigger} />
       ))}
     </>
   );

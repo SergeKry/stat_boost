@@ -10,7 +10,7 @@ const Players = () => {
     <>
       <h1>Players</h1>
       <Box style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-        <PlayersList refreshTrigger={refreshTrigger} />
+        <PlayersList refreshTrigger={refreshTrigger} setRefreshTrigger={setRefreshTrigger} />
         <PlayerCreateCard setRefreshTrigger={setRefreshTrigger} />
       </Box>
     </>

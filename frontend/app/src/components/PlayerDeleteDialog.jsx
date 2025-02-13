@@ -6,14 +6,26 @@ import {
   DialogContentText,
   DialogTitle,
 } from "@mui/material";
-import React from "react";
+import useDeletePlayer from "../hooks/useDeletePlayer";
 
-function PlayerDeleteDialog({ open, handleClose, player }) {
+function PlayerDeleteDialog({ open, handleClose, player, setRefreshTrigger }) {
   const dialogText = `Do you really want to delete ${player.nickname} from the list? This action cannot be reverted. But you can add this player again later.`;
+  const {
+    removePlayer,
+    loading: removingPlayer,
+    successMessage,
+    setSuccessMessage,
+  } = useDeletePlayer();
+
+  const handleCloseDialog = () => {
+    handleClose();
+    setSuccessMessage("");
+  };
+
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={handleCloseDialog}
       aria-labelledby="player-delete-dialog-title"
       aria-describedby="player-delete-dialog-description"
     >
@@ -26,8 +38,15 @@ function PlayerDeleteDialog({ open, handleClose, player }) {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose} variant="outlined" color="error">
+        <Button onClick={handleCloseDialog}>Cancel</Button>
+        <Button onClick={() => removePlayer(player, () => {
+            handleCloseDialog();
+            setRefreshTrigger((prev) => !prev);
+        })
+        } 
+        variant="outlined"
+        color="error"
+        disabled={removingPlayer}>
           Delete
         </Button>
       </DialogActions>

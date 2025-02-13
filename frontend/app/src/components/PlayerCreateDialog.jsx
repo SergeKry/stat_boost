@@ -21,7 +21,7 @@ function PlayerCreateDialog({ open, handleClose, setRefreshTrigger }) {
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const { players, loading, setPlayers } = useWgPlayerSearch(searchQuery);
   const {
-    addPlayer,
+    Player,
     loading: addingPlayer,
     successMessage,
     setSuccessMessage,
