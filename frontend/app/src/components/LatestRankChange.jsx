@@ -1,14 +1,14 @@
 import { Typography } from "@mui/material";
 import DashboardContainer from "./DashboardContainer";
 
-function PlayerData({ player }) {
+function LatestRankChange({ player }) {
   return (
     <>
       <DashboardContainer>
-        <Typography>WG API Player data</Typography>
+        <Typography>Latest rank change</Typography>
       </DashboardContainer>
     </>
   );
 }
 
-export default PlayerData;
+export default LatestRankChange;

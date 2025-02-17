@@ -1,14 +1,14 @@
 import { Typography } from "@mui/material";
 import DashboardContainer from "./DashboardContainer";
 
-function PlayerData({ player }) {
+function SomethingElseChart({ player }) {
   return (
     <>
       <DashboardContainer>
-        <Typography>WG API Player data</Typography>
+        <Typography>SomethingElseChart</Typography>
       </DashboardContainer>
     </>
   );
 }
 
-export default PlayerData;
+export default SomethingElseChart;

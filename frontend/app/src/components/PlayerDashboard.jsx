@@ -1,6 +1,8 @@
-import { Box, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid2";
+import { Box, Container, Typography } from "@mui/material";
 import PlayerData from "./PlayerData";
+import LatestRankChange from "./LatestRankChange";
+import StatisticsChart from "./StatisticsChart";
+import SomethingElseChart from "./SomethingElseChart";
 import { formatTimestamp } from "../utils/formatTimestamp";
 
 function PlayerDashboard({ player }) {
@@ -9,18 +11,28 @@ function PlayerDashboard({ player }) {
       <Typography variant="h3">{player.nickname}</Typography>
       <Box sx={{ display: "flex", justifyContent: "space-between", pb: 2 }}>
         <Typography variant="subtitle2">{player.wg_player_id}</Typography>
-        <Typography variant="subtitle2">Last updated: {formatTimestamp(player.updated_at)}</Typography>
+        <Typography variant="subtitle2">
+          Last updated: {formatTimestamp(player.updated_at)}
+        </Typography>
       </Box>
-      <Grid container spacing={2}>
-        <Grid size={6}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "stretch",
+          gap: 2,
+          height: "100%",
+        }}
+      >
+        <Box sx={{ flex: 1, display: "flex" }}>
           <PlayerData player={player} />
-        </Grid>
-        <Grid size={6}>
-          <Typography>Latest rank change</Typography>
-          <Typography>Statistics chart</Typography>
-          <Typography>Possibly something else</Typography>
-        </Grid>
-      </Grid>
+        </Box>
+        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+          <LatestRankChange />
+          <StatisticsChart />
+          <SomethingElseChart />
+        </Box>
+      </Box>
     </>
   );
 }

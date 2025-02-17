@@ -17,13 +17,13 @@ function PlayerDetails() {
   }
 
   return (
-    <Box sx={{ width: "100%", bgcolor: "background.paper", p: 2 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "calc(100vh - 150px)", width: "100%", bgcolor: "background.paper", p: 2 }}>
       <Tabs value={tabIndex} onChange={handleTabChange} centered>
         <Tab label="Profile" />
         <Tab label="Statistics" />
         <Tab label="Boost Options" />
       </Tabs>
-      <Box sx={{ p: 3 }}>
+      <Box sx={{ p: 3, flexGrow: 1 }}>
         {tabIndex === 0 && <PlayerDashboard player={player} />}
         {tabIndex === 1 && (
           <Typography variant="h6">Statistics Content Goes Here</Typography>
