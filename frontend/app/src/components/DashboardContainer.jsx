@@ -3,7 +3,7 @@ import { Container } from "@mui/material";
 
 const DashboardContainer = ({children}) => {
   return (
-    <Container sx={{ borderRadius: "8px", border: " 2px solid #E9E9E9",  flexGrow: 1, }}> {children} </Container>
+    <Container sx={{ borderRadius: "8px", border: " 2px solid #E9E9E9",  flexGrow: 1, py: 2, flex: 1}}> {children} </Container>
   )
 }
 
