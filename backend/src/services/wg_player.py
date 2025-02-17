@@ -23,10 +23,9 @@ class WgPlayerIdService:
 
 
                 response_data = response.json()
-                if "data" in response_data:
-                    return response_data["data"]
-                else:
-                    return {"error": "Missing 'data' field in response"}
+                if "data" not in response_data:
+                    raise HTTPException(status_code=500, detail=response_data)
+                return response_data["data"]
 
         except httpx.HTTPStatusError as e:
             return {"error": f"HTTP error: {e.response.status_code}"}
