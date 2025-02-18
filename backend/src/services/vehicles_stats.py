@@ -8,6 +8,13 @@ from models.vehicles_stats import VehiclesStats
 from models.players import Player
 
 class VehiclesStatsService:
+    """
+    Service that handles calculating statistics for vehicles/tanks of given user.
+     - Fetch statistics data from WG API
+     - Calculate statistics value based on API data and Expected values from DB
+     - Save vehicles statistics to database
+     - Get the list of actual statistics for each player's vehicle
+    """
     vehicle_stats_url = "https://api.worldoftanks.eu/wot/tanks/stats/"
     params ={
         'application_id': WARGAMING_API_KEY,
@@ -38,6 +45,7 @@ class VehiclesStatsService:
             return {"error": f"Request error: {str(e)}"}
         
     async def calculate_avg_values(self, tank_item: dict):
+        """Calculate avg values for a given tank from API data"""
         data = tank_item["random"]
         battles = data["battles"]
 
@@ -54,6 +62,7 @@ class VehiclesStatsService:
             "avg_winrate": avg_winrate,
         }
     async def get_exp_values(self, wg_tank_id: int, db: AsyncSession) -> tuple:
+        """Get expected values from Database"""
         result = await db.execute(select(Tank).where(Tank.wg_tank_id == wg_tank_id))
         tank = result.scalars().first()
         if not tank:
@@ -67,6 +76,7 @@ class VehiclesStatsService:
         }
     
     async def calculate_wn8(self, avg_values: dict, exp_values: dict):
+        """Calculate WN8 for a given vehicle"""
         r_damage = avg_values["avg_damage"] / exp_values["exp_damage"]
         r_spot = avg_values["avg_spot"] / exp_values["exp_spot"]
         r_frag = avg_values["avg_frag"] / exp_values["exp_frag"]
@@ -82,6 +92,7 @@ class VehiclesStatsService:
         return round(wn8, 2)
     
     async def save_vehicle_statistics(self, wg_player_id: int, stat_data: dict, db: AsyncSession):
+        """Save vehicles statistics to DB"""
         query = select(VehiclesStats).where(VehiclesStats.wg_player_id == wg_player_id).where(VehiclesStats.wg_tank_id == stat_data["wg_tank_id"]).where(VehiclesStats.actual == True)
         result = await db.execute(query)
         latest_vehicle_statistics = result.scalars().first()
@@ -106,7 +117,8 @@ class VehiclesStatsService:
         await db.refresh(new_vehicle_statistics)
         return new_vehicle_statistics
 
-    async def calculate_vehicle_stats(self, tank_item: dict, db: AsyncSession):
+    async def calculate_vehicle_stats(self, tank_item: dict, db: AsyncSession) -> dict:
+        """Calculate vehicle statistics based on API data"""
         wg_tank_id = tank_item["tank_id"]
         battles = tank_item["random"]["battles"]
         if battles == 0:
@@ -128,6 +140,7 @@ class VehiclesStatsService:
         }
 
     async def update_vehicles_stats(self, wg_player_id: int, db: AsyncSession):
+        """Method to get vehicle data from API, calculate statistics and save statistics"""
         player = await db.execute(select(Player).where(Player.wg_player_id == wg_player_id))
         if not player.scalars().first():
             raise HTTPException(status_code=404, detail="Player not found")
@@ -135,3 +148,7 @@ class VehiclesStatsService:
         vehicles_stats = [await self.calculate_vehicle_stats(item, db) for item in vehicles_data]
         saved_vehicles = [await self.save_vehicle_statistics(wg_player_id, item, db) for item in vehicles_stats if item is not None]
         return len([item for item in saved_vehicles if item is not None])
+    
+    async def get_vehicles_stats(self, wg_player_id: int, db: AsyncSession):
+        """Method to get all actual vehicle statistics from DB"""
+        pass
