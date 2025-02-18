@@ -151,4 +151,10 @@ class VehiclesStatsService:
     
     async def get_vehicles_stats(self, wg_player_id: int, db: AsyncSession):
         """Method to get all actual vehicle statistics from DB"""
-        pass
+        query = (
+            select(VehiclesStats)
+            .where(VehiclesStats.wg_player_id == wg_player_id)
+            .where(VehiclesStats.actual == True)
+        )
+        result = await db.execute(query)
+        return result.scalars().all()
