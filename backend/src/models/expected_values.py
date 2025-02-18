@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, func
+from sqlalchemy.orm import relationship
 from core.database import Base
 
 class Tank(Base):
@@ -20,3 +21,5 @@ class Tank(Base):
     big_icon = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    vehicles_stats = relationship("VehiclesStats", back_populates="tank")

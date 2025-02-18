@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, asc
+from sqlalchemy import select
 from models.players import Player
 from schemas.players import PlayerCreate
 
