@@ -20,7 +20,7 @@ class VehiclesStatsService:
         'application_id': WARGAMING_API_KEY,
     }
     
-    async def collect_vehicles_data(self, wg_player_id: int):
+    async def collect_vehicles_data(self, wg_player_id: int) -> list:
         """Fetch vehicles data for a given player from WG API"""
         url = self.vehicle_stats_url
         params = self.params
@@ -61,7 +61,7 @@ class VehiclesStatsService:
             "avg_def": avg_def,
             "avg_winrate": avg_winrate,
         }
-    async def get_exp_values(self, wg_tank_id: int, db: AsyncSession) -> tuple:
+    async def get_exp_values(self, wg_tank_id: int, db: AsyncSession) -> dict:
         """Get expected values from Database"""
         result = await db.execute(select(Tank).where(Tank.wg_tank_id == wg_tank_id))
         tank = result.scalars().first()
