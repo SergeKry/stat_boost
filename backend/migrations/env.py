@@ -11,6 +11,7 @@ from core.database import Base, engine
 from models import (
     expected_values,
     players,
+    vehicles_stats,
     )
 
 # this is the Alembic Config object, which provides
