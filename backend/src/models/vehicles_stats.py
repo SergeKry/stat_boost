@@ -25,4 +25,4 @@ class VehiclesStats(Base):
     tank = relationship("Tank", back_populates="vehicles_stats")
 
     def __repr__(self):
-        return f"<VehiclesStats(player_id={self.player_id}, tank_id={self.tank_id}, tank_battles={self.tank_battles})>"
+        return f"<VehiclesStats(player_id={self.wg_player_id}, tank_id={self.wg_tank_id}, tank_battles={self.tank_battles})>"

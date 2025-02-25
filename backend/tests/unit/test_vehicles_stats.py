@@ -1,9 +1,10 @@
 import pytest
 from fastapi import HTTPException
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from services.vehicles_stats import VehiclesStatsService
 from models.expected_values import Tank
-from sqlalchemy import delete, select
+from models.vehicles_stats import VehiclesStats
 
 
 @pytest.mark.asyncio
@@ -59,7 +60,7 @@ class TestVehiclesStats:
         self.exp_values = Tank(
             name="TestTank",
             nation="testnation",
-            wg_tank_id=18497,
+            wg_tank_id=self.wg_tank_id,
             tier=5,
             type="heavy",
             exp_def=self.exp_def,
@@ -68,6 +69,17 @@ class TestVehiclesStats:
             exp_winrate=self.exp_winrate,
             exp_frag=self.exp_frag,
         )
+
+        self.stat_data = {
+            "wg_tank_id": self.wg_tank_id,
+            "battles": 10,
+            "wn8": 1500,
+            "avg_damage": 1000,
+            "avg_spot": 0.8,
+            "avg_frag": 0.7,
+            "avg_def": 0.8,
+            "avg_winrate": 52
+        }
         
         yield  # Run the tests
 
@@ -186,4 +198,57 @@ class TestVehiclesStats:
         assert result == 1641.15
     
     async def test_statistics_creation(self):
-        """Test that vehicle statistics is properly saved"""
+        """Test that vehicle statistics is properly saved for the first time"""
+
+        await self.service.save_vehicle_statistics(self.wg_player_id, self.stat_data, self.db)
+
+        query = select(VehiclesStats).where(VehiclesStats.wg_player_id == self.wg_player_id).where(VehiclesStats.wg_tank_id == self.wg_tank_id)
+        result = await self.db.execute(query)
+        vehicle_statistics_list = result.scalars().all()
+
+        assert len(vehicle_statistics_list) == 1
+
+        latest_vehicle_stat = vehicle_statistics_list[0]
+        assert latest_vehicle_stat.actual == True
+        assert latest_vehicle_stat.wg_tank_id == self.stat_data["wg_tank_id"]
+        assert latest_vehicle_stat.wg_player_id == self.wg_player_id
+        assert latest_vehicle_stat.tank_battles == self.stat_data["battles"]
+        assert latest_vehicle_stat.tank_wn8 == self.stat_data["wn8"]
+        assert latest_vehicle_stat.avg_damage == self.stat_data["avg_damage"]
+        assert latest_vehicle_stat.avg_spot == self.stat_data["avg_spot"]
+        assert latest_vehicle_stat.avg_frag == self.stat_data["avg_frag"]
+        assert latest_vehicle_stat.avg_def == self.stat_data["avg_def"]
+        assert latest_vehicle_stat.avg_winrate == self.stat_data["avg_winrate"]
+
+    async def test_statistics_creation_equal_battles(self):
+        """Test statistics creation if we already have similar statistics entry with the same number of battles"""
+        await self.service.save_vehicle_statistics(self.wg_player_id, self.stat_data, self.db)
+        second_stat = await self.service.save_vehicle_statistics(self.wg_player_id, self.stat_data, self.db)
+
+        assert second_stat is None
+
+        query = select(VehiclesStats).where(VehiclesStats.wg_player_id == self.wg_player_id).where(VehiclesStats.wg_tank_id == self.wg_tank_id)
+        result = await self.db.execute(query)
+        vehicle_statistics_list = result.scalars().all()
+
+        assert len(vehicle_statistics_list) == 1
+
+    async def test_statistics_creation_different_battles(self):
+        """Test statistics creation when the number of battles has changed"""
+        first_statistics = await self.service.save_vehicle_statistics(self.wg_player_id, self.stat_data, self.db)
+        self.stat_data["battles"] += 1
+        second_statistics = await self.service.save_vehicle_statistics(self.wg_player_id, self.stat_data, self.db)
+
+        query = select(VehiclesStats).where(VehiclesStats.wg_player_id == self.wg_player_id).where(VehiclesStats.wg_tank_id == self.wg_tank_id)
+        result = await self.db.execute(query)
+        vehicle_statistics_list = result.scalars().all()
+
+        assert len(vehicle_statistics_list) == 2
+
+        vehicle_statistics_list.sort(key=lambda stat: stat.created_at)
+
+        first_stat_from_db = vehicle_statistics_list[0]
+        second_stat_from_db = vehicle_statistics_list[1]
+
+        assert first_stat_from_db.actual == False
+        assert second_stat_from_db.actual == True
