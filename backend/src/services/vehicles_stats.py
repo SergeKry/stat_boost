@@ -155,6 +155,7 @@ class VehiclesStatsService:
             select(VehiclesStats)
             .where(VehiclesStats.wg_player_id == wg_player_id)
             .where(VehiclesStats.actual == True)
+            .order_by(VehiclesStats.tank_battles.desc())
         )
         result = await db.execute(query)
         return result.scalars().all()
