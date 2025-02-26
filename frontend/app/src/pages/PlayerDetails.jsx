@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Box, Tabs, Tab, Typography } from "@mui/material";
 import PlayerDashboard from "../components/PlayerDashboard";
+import VehiclesStats from "../components/VehiclesStats";
 import { formatTimestamp } from "../utils/formatTimestamp";
 
 function PlayerDetails() {
@@ -33,9 +34,7 @@ function PlayerDetails() {
       </Tabs>
       <Box sx={{ py: 3, flexGrow: 1 }}>
         {tabIndex === 0 && <PlayerDashboard player={player} />}
-        {tabIndex === 1 && (
-          <Typography variant="h6">Statistics Content Goes Here</Typography>
-        )}
+        {tabIndex === 1 && <VehiclesStats player={player} />}
         {tabIndex === 2 && (
           <Typography variant="h6">Boost Options Content Goes Here</Typography>
         )}

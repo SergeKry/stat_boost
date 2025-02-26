@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getAllTanks } from "../api/tankApi";
 
-export const useTanks = (page = 1, limit = 50, sortBy = "name", order = "asc", search = "", refreshTrigger) => {
+export const useTanks = (page = 1, limit = 2000, sortBy = "name", order = "asc", search = "", refreshTrigger) => {
   const [tanks, setTanks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
