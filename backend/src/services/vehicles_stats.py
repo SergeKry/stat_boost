@@ -23,7 +23,7 @@ class VehiclesStatsService:
     async def collect_vehicles_data(self, wg_player_id: int) -> list:
         """Fetch vehicles data for a given player from WG API"""
         url = self.vehicle_stats_url
-        params = self.params
+        params = self.params.copy()
         params.update({
             "account_id": wg_player_id,
             "extra": "random",
