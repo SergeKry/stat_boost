@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { getVehiclesStats } from "../api/vehiclesStatsApi";
 
-export const useGetVehiclesStats = (playerId) => {
+export const useGetVehiclesStats = (playerId, refreshTrigger) => {
   const [vehiclesStats, setVehiclesStats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  console.log("useGetVehiclesStats properly mounted")
 
   useEffect(() => {
     if (!playerId) return;
@@ -17,7 +15,6 @@ export const useGetVehiclesStats = (playerId) => {
 
       try {
         const data = await getVehiclesStats(playerId);
-        console.log("data received")
         setVehiclesStats(data[String(playerId)]);
       } catch (err) {
         setError(err.message || "Error fetching vehicles stats");
@@ -27,7 +24,7 @@ export const useGetVehiclesStats = (playerId) => {
     };
 
     fetchVehiclesStats();
-  }, [playerId]);
+  }, [playerId, refreshTrigger]);
 
   return { vehiclesStats, loading, error };
 };
