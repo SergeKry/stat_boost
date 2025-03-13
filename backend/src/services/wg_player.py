@@ -13,7 +13,7 @@ class WgPlayerIdService:
     
     async def get_players(self, nickname: str):
         url = self.wg_players_url
-        params = self.params
+        params = self.params.copy()
         params.update({'search': nickname})
 
         try:
@@ -34,7 +34,7 @@ class WgPlayerIdService:
         
     async def get_player_details(self, account_id: int):
         url = self.wg_player_details
-        params = self.params
+        params = self.params.copy()
         params.update({
             "account_id": account_id,
             "extra": "statistics.random",

@@ -36,3 +36,14 @@ class TestWGPlayers:
         assert "logout_at" in response_data
         assert "last_battle_time" in response_data
         assert "statistics" in response_data
+
+    async def test_params(self):
+        """This is to test that we use a copy of params for every request and we do not modify it"""
+        response1 = self.client.get(f"{self.edpoint_url}?search=pla")
+        assert response1.status_code == 200
+
+        response2 = self.client.get(f"{self.edpoint_url}{self.wg_player_id}")
+        assert response2.status_code == 200
+
+        response3 = self.client.get(f"{self.edpoint_url}?search=pla")
+        assert response3.status_code == 200
