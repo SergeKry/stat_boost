@@ -1,5 +1,7 @@
 import { useState } from "react";
 import {
+  Box,
+  Button,
   CircularProgress,
   Paper,
   Table,
@@ -11,20 +13,34 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { useGetVehiclesStats } from "../hooks/useGetVehiclesStats";
+import { useUpdateVehiclesStats } from "../hooks/useUpdateVehiclesStats";
 import { useTanks } from "../hooks/useTanks";
 
 const VehiclesStats = ({ player }) => {
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
+  
   const {
     vehiclesStats,
     loading: statsLoading,
     error: statError,
-  } = useGetVehiclesStats(player.wg_player_id);
+  } = useGetVehiclesStats(player.wg_player_id, refreshTrigger);
+
   const {
     tanks,
     loading: tanksLoading,
     error: tanksError,
     totalPages,
   } = useTanks();
+
+  const {
+    updateStats,
+    updateLoading,
+    updateError,
+    updateSuccess,
+    updateMessage,
+  } = useUpdateVehiclesStats();
 
   const [sortBy, setSortBy] = useState("tank_battles"); // Default sort column
   const [order, setOrder] = useState("desc"); // Sorting order
@@ -54,6 +70,13 @@ const VehiclesStats = ({ player }) => {
     }
   };
 
+  const handleUpdateStats = async () => {
+    setIsUpdating(true);
+    await updateStats(player.wg_player_id);
+    setIsUpdating(false);
+    setRefreshTrigger((prev) => !prev);
+  };
+
   mergedList = [...mergedList].sort((a, b) => {
     if (!a[sortBy] || !b[sortBy]) return 0; // Handle undefined values
     if (typeof a[sortBy] === "number") {
@@ -67,6 +90,24 @@ const VehiclesStats = ({ player }) => {
 
   return (
     <TableContainer component={Paper}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "end",
+          alignItems: "center",
+          p: 2,
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={handleUpdateStats}
+          disabled={isUpdating}
+        >
+          {isUpdating ? <CircularProgress size={24} /> : "Update Tanks"}
+        </Button>
+        </Box>
       <Table aria-label="vehicles stats table">
         <TableHead>
           <TableRow>
