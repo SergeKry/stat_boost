@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from models.players import Player
 from schemas.players import PlayerCreate
+from services.vehicles_stats import VehiclesStatsService
 
 class PlayerService():
     """Class to handle Player CRUD operations"""
@@ -17,6 +18,7 @@ class PlayerService():
         db.add(new_player)
         await db.commit()
         await db.refresh(new_player)
+        await VehiclesStatsService().update_vehicles_stats(new_player.wg_player_id, db)
         return new_player
 
     async def get_players(self, db: AsyncSession):
