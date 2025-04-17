@@ -7,6 +7,7 @@ from api.routes import (healthcheck,
                         wg_player,
                         players,
                         vehicles_stats,)
+from scheduler import start_scheduler
 
 app = FastAPI()
 
@@ -23,3 +24,7 @@ app.include_router(expected_values.router, prefix="/expected-values", tags=["Exp
 app.include_router(wg_player.router, prefix="/wg_player", tags=["WG Player ID"])
 app.include_router(players.router, prefix="/players", tags=["Players"])
 app.include_router(vehicles_stats.router, prefix="/vehicles-stats", tags=["Vehicles Stats"])
+
+@app.on_event("startup")
+async def startup_event():
+    start_scheduler()
