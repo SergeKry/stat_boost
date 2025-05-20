@@ -6,6 +6,11 @@ export const getAllTanks = async (page = 1, limit = 50, sortBy = "wg_tank_id", o
 };
 
 export const updateAllTanks = async () => {
-    const response = await apiClient.post("/expected-values")
+    const response = await apiClient.post("/expected-values");
     return response.data
+};
+
+export const getOneTank = async (wgTankId) => {
+    const response = await apiClient.get(`/expected-values/${wgTankId}`);
+    return response.data;
 };

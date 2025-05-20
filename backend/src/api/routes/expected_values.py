@@ -23,3 +23,8 @@ async def get_expected(
     ):
     """Returns list of tanks in db and their expected values"""
     return await Service().return_all_tanks(db, page, limit, sort_by, order, search)
+
+@router.get("/{wg_tank_id}")
+async def get_expected_one(wg_tank_id: int, db: AsyncSession = Depends(get_db)):
+    """Returns expected values for a given tank"""
+    return await Service().return_one_tank(db, wg_tank_id)
