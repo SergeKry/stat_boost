@@ -26,9 +26,11 @@ class TestPlayers:
         
         self.db.add(self.existing_player)
 
+        self.wg_tank_id = 18497
+
         self.vehicle_statistics_data = {
             "wg_player_id": self.wargaming_existing_player_id,
-            "wg_tank_id": 18497,
+            "wg_tank_id": self.wg_tank_id,
             "avg_damage": 639.4326923076923,
             "avg_spot": 2.3653846153846154,
             "avg_def": 0,
@@ -62,4 +64,29 @@ class TestPlayers:
         assert str(self.wargaming_existing_player_id) in response_data
         assert isinstance(response_data[str(self.wargaming_existing_player_id)], list)
 
+    async def test_get_vehicles_stats_search(self):
+        """Positive test to get the exact one vehicle stat using search"""
+        vehicles_stats_endpoint_url = f"{self.endpoint_url}{self.wargaming_existing_player_id}?search={self.wg_tank_id}"
+        response = self.client.get(vehicles_stats_endpoint_url)
 
+        assert response.status_code == 200
+        response_data = response.json()[f"{self.wargaming_existing_player_id}"][0]
+
+        assert response_data["wg_tank_id"] == self.wg_tank_id
+
+    async def test_get_vehicles_stat_search_string(self):
+        """Negative test to check error handling during wg_tank_id conversion from str to int"""
+        vehicles_stats_endpoint_url = f"{self.endpoint_url}{self.wargaming_existing_player_id}?search=aaa"
+        response = self.client.get(vehicles_stats_endpoint_url)
+
+        assert response.status_code == 422
+
+    async def test_get_vehicles_stat_search_404(self):
+        """Negative test to check that we return an empty list if tank statistics was not found"""
+        vehicles_stats_endpoint_url = f"{self.endpoint_url}{self.wargaming_existing_player_id}?search={self.wg_tank_id+1}"
+        response = self.client.get(vehicles_stats_endpoint_url)
+
+        assert response.status_code == 200
+        response_data = response.json()[f"{self.wargaming_existing_player_id}"]
+
+        assert len(response_data) == 0

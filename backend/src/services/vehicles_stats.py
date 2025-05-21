@@ -149,7 +149,7 @@ class VehiclesStatsService:
         saved_vehicles = [await self.save_vehicle_statistics(wg_player_id, item, db) for item in vehicles_stats if item is not None]
         return len([item for item in saved_vehicles if item is not None])
     
-    async def get_vehicles_stats(self, wg_player_id: int, db: AsyncSession):
+    async def get_vehicles_stats(self, wg_player_id: int, search: int, db: AsyncSession):
         """Method to get all actual vehicle statistics from DB"""
         query = (
             select(VehiclesStats)
@@ -157,5 +157,13 @@ class VehiclesStatsService:
             .where(VehiclesStats.actual == True)
             .order_by(VehiclesStats.tank_battles.desc())
         )
+
+        if search:
+            try:
+                search_tank_id = int(search)
+                query = query.filter(VehiclesStats.wg_tank_id == search_tank_id)
+            except ValueError:
+                pass
+
         result = await db.execute(query)
         return result.scalars().all()

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Dict
 from core.database import get_db
@@ -13,7 +13,11 @@ async def update_vehicles_stats(wg_player_id: int, db: AsyncSession = Depends(ge
     return {"updated_vehicles": updated_vehicles}
 
 @router.get("/{wg_player_id}", response_model=Dict[int, List[VehicleStatsSchema]])
-async def get_vehicles_stats(wg_player_id: int, db: AsyncSession = Depends(get_db)):
-    vehicles_statistics = await Service().get_vehicles_stats(wg_player_id, db)
+async def get_vehicles_stats(
+    wg_player_id: int,
+    search: int = Query(None),
+    db: AsyncSession = Depends(get_db)
+    ):
+    vehicles_statistics = await Service().get_vehicles_stats(wg_player_id, search, db)
     fromatted_stats = {wg_player_id: [VehicleStatsSchema(**stat.__dict__) for stat in vehicles_statistics]}
     return fromatted_stats
