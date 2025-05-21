@@ -10,7 +10,8 @@ from sqlalchemy import delete
 class TestGetTanks:
     """Class to test GET endpoint for retrieving tanks"""
 
-    edpoint_url = "/expected-values/"
+    endpoint_url = "/expected-values/"
+    wg_tank_id = 1
 
     @pytest.fixture(autouse=True)
     async def setup_class(self, test_db_session: AsyncSession):
@@ -20,7 +21,7 @@ class TestGetTanks:
 
         # Insert test data
         self.test_tanks = [
-            Tank(name="T-34", nation="ussr", wg_tank_id=1, tier=5, type="mediumTank",
+            Tank(name="T-34", nation="ussr", wg_tank_id=self.wg_tank_id, tier=5, type="mediumTank",
                  small_icon="http://api.worldoftanks.eu/static/2.76.0/wot/encyclopedia/vehicle/small/ussr-R04_T-34.png",
                  contour_icon="http://api.worldoftanks.eu/static/2.76.0/wot/encyclopedia/vehicle/contour/ussr-R04_T-34.png",
                  big_icon="http://api.worldoftanks.eu/static/2.76.0/wot/encyclopedia/vehicle/ussr-R04_T-34.png"),
@@ -42,7 +43,7 @@ class TestGetTanks:
 
     async def test_get_tanks_list(self):
         """Test fetching all tanks via GET request"""
-        response = self.client.get(self.edpoint_url)
+        response = self.client.get(self.endpoint_url)
 
         assert response.status_code == 200
         response_data = response.json()["data"]
@@ -61,7 +62,7 @@ class TestGetTanks:
 
     async def test_get_tanks_list_pagination(self):
         """Test pagination of get all tanks endpoint"""
-        response = self.client.get(self.edpoint_url)
+        response = self.client.get(self.endpoint_url)
 
         assert response.status_code == 200
         response_data = response.json()
@@ -73,7 +74,7 @@ class TestGetTanks:
         assert "data" in response_data
 
     async def test_get_tanks_list_sorting(self):
-        response = self.client.get(f"{self.edpoint_url}?sort_by=name")
+        response = self.client.get(f"{self.endpoint_url}?sort_by=name")
 
         assert response.status_code == 200
         response_data = response.json()["data"]
@@ -81,10 +82,33 @@ class TestGetTanks:
         assert response_data[0]["name"] == "T-34"
 
     async def test_get_tanks_list_search(self):
-        response = self.client.get(f"{self.edpoint_url}?search=T-34")
+        response = self.client.get(f"{self.endpoint_url}?search=T-34")
         
         assert response.status_code == 200
         response_data = response.json()["data"]
 
         assert len(response_data) == 1
         assert response_data[0]["name"] == "T-34"
+
+    async def test_get_one_tank(self):
+        response = self.client.get(f"{self.endpoint_url}{self.wg_tank_id}")
+        assert response.status_code == 200
+
+        response_data = response.json()
+        assert "wg_tank_id" in response_data
+        assert response_data["wg_tank_id"] == self.wg_tank_id
+        assert "nation" in response_data
+        assert "type" in response_data
+        assert "exp_spot" in response_data
+        assert "exp_winrate" in response_data
+        assert "small_icon" in response_data
+        assert "big_icon" in response_data
+        assert "updated_at" in response_data
+        assert "id" in response_data
+        assert "name" in response_data
+        assert "tier" in response_data
+        assert "exp_def" in response_data
+        assert "exp_damage" in response_data
+        assert "exp_frag" in response_data
+        assert "contour_icon" in response_data
+        assert "created_at" in response_data

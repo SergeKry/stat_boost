@@ -25,9 +25,6 @@ const VehiclesStatsDetail = ({ tankDetails, onBack }) => (
         <Typography>Type: {tankDetails.type}</Typography>
         <Typography>Nation: {tankDetails.nation}</Typography>
         <Typography>Tier: {tankDetails.tier}</Typography>
-        {/* <Typography>WN8: {tankDetails.tank_wn8.toFixed(0)}</Typography>
-        <Typography>Winrate: {tankDetails.avg_winrate.toFixed(2)}%</Typography> */}
-
       </Grid>
       <Grid size={4}>
         <Grid container>

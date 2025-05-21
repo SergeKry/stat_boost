@@ -145,7 +145,7 @@ class VehiclesStatsService:
         if not player.scalars().first():
             raise HTTPException(status_code=404, detail="Player not found")
         vehicles_data = await self.collect_vehicles_data(wg_player_id)
-        vehicles_stats = [await self.calculate_vehicle_stats(item, db) for item in vehicles_data]
+        vehicles_stats = [await self.calculate_vehicle_stats(item, db) for item in vehicles_data] if vehicles_data else []
         saved_vehicles = [await self.save_vehicle_statistics(wg_player_id, item, db) for item in vehicles_stats if item is not None]
         return len([item for item in saved_vehicles if item is not None])
     
