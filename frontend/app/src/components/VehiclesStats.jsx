@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
   TableSortLabel,
-  Typography,
 } from "@mui/material";
 import VehiclesStatsDetailContainer from "./VehiclesStatsDetailContainer";
 import { useGetVehiclesStats } from "../hooks/useGetVehiclesStats";
@@ -26,7 +25,7 @@ const VehiclesStats = ({ player, selectedTank, setSelectedTank }) => {
     vehiclesStats,
     loading: statsLoading,
     error: statError,
-  } = useGetVehiclesStats(player.wg_player_id, refreshTrigger);
+  } = useGetVehiclesStats(player.wg_player_id, true, undefined, refreshTrigger);
 
   const {
     tanks,
@@ -92,6 +91,7 @@ const VehiclesStats = ({ player, selectedTank, setSelectedTank }) => {
   if (selectedTank)
     return (
       <VehiclesStatsDetailContainer
+        player={player}
         tank={selectedTank}
         onBack={() => setSelectedTank(null)}
       />
