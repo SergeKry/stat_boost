@@ -7,8 +7,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import delete, select
 
 @pytest.mark.asyncio
-class TestPlayers:
-    """Class to test set of endpoints for Players"""
+class TestStatistics:
+    """Class to test set of endpoints for vehicles statistics"""
 
     endpoint_url = "/vehicles-stats/"
 
@@ -26,20 +26,52 @@ class TestPlayers:
         
         self.db.add(self.existing_player)
 
-        self.vehicle_statistics_data = {
+        self.wg_tank_id = 18497
+
+        self.vehicle_statistics_data = [
+            {
             "wg_player_id": self.wargaming_existing_player_id,
-            "wg_tank_id": 18497,
+            "wg_tank_id": self.wg_tank_id,
             "avg_damage": 639.4326923076923,
             "avg_spot": 2.3653846153846154,
             "avg_def": 0,
             "tank_battles": 104,
             "tank_wn8": 989.85,
             "avg_frag": 0.4326923076923077,
-            "avg_winrate": 44.230769230769226
-            }
-        self.existing_vehicle_statistics = VehiclesStats(**self.vehicle_statistics_data)
+            "avg_winrate": 44.230769230769226,
+            "actual": True
+            },
+            {
+            "wg_player_id": self.wargaming_existing_player_id,
+            "wg_tank_id": self.wg_tank_id,
+            "avg_damage": 639.4326923076923,
+            "avg_spot": 2.3653846153846154,
+            "avg_def": 0,
+            "tank_battles": 106,
+            "tank_wn8": 989.85,
+            "avg_frag": 0.4326923076923077,
+            "avg_winrate": 44.230769230769226,
+            "actual": False
+            },
+            {
+            "wg_player_id": self.wargaming_existing_player_id,
+            "wg_tank_id": 1,
+            "avg_damage": 639.4326923076923,
+            "avg_spot": 2.3653846153846154,
+            "avg_def": 0,
+            "tank_battles": 106,
+            "tank_wn8": 989.85,
+            "avg_frag": 0.4326923076923077,
+            "avg_winrate": 44.230769230769226,
+            "actual": True
+            },
+        ]
 
-        self.db.add(self.existing_vehicle_statistics)
+        
+        self.existing_stats = [VehiclesStats(**data) for data in self.vehicle_statistics_data]
+        
+        for item in self.existing_stats:
+            self.db.add(item)
 
         await self.db.commit()
 
@@ -62,4 +94,32 @@ class TestPlayers:
         assert str(self.wargaming_existing_player_id) in response_data
         assert isinstance(response_data[str(self.wargaming_existing_player_id)], list)
 
+    async def test_get_vehicles_stats_filter_by_tank(self):
+        """Positive test to check filter by wg_tank_id"""
+        vehicles_stats_endpoint_url = f"{self.endpoint_url}{self.wargaming_existing_player_id}?tank_id={self.wg_tank_id}"
+        response = self.client.get(vehicles_stats_endpoint_url)
 
+        assert response.status_code == 200
+        response_data = response.json()[f"{self.wargaming_existing_player_id}"]
+        for item in response_data:
+            assert item["wg_tank_id"] == self.wg_tank_id
+
+    async def test_get_vehicles_stats_filter_by_actual_true(self):
+        """Positive test to check filter by actual== True"""
+        vehicles_stats_endpoint_url = f"{self.endpoint_url}{self.wargaming_existing_player_id}?actual=true"
+        response = self.client.get(vehicles_stats_endpoint_url)
+
+        assert response.status_code == 200
+        response_data = response.json()[f"{self.wargaming_existing_player_id}"]
+        for item in response_data:
+            assert item["actual"] == True
+
+    async def test_get_vehicles_stat_search_404(self):
+        """Negative test to check that we return an empty list if tank statistics was not found"""
+        vehicles_stats_endpoint_url = f"{self.endpoint_url}{self.wargaming_existing_player_id}?tank_id={self.wg_tank_id+1}"
+        response = self.client.get(vehicles_stats_endpoint_url)
+
+        assert response.status_code == 200
+        response_data = response.json()[f"{self.wargaming_existing_player_id}"]
+
+        assert len(response_data) == 0

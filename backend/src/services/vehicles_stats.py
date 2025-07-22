@@ -1,6 +1,7 @@
 import httpx
 from fastapi import HTTPException
-from sqlalchemy import select
+from typing import Optional
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import WARGAMING_API_KEY
 from models.expected_values import Tank
@@ -145,17 +146,29 @@ class VehiclesStatsService:
         if not player.scalars().first():
             raise HTTPException(status_code=404, detail="Player not found")
         vehicles_data = await self.collect_vehicles_data(wg_player_id)
-        vehicles_stats = [await self.calculate_vehicle_stats(item, db) for item in vehicles_data]
+        vehicles_stats = [await self.calculate_vehicle_stats(item, db) for item in vehicles_data] if vehicles_data else []
         saved_vehicles = [await self.save_vehicle_statistics(wg_player_id, item, db) for item in vehicles_stats if item is not None]
         return len([item for item in saved_vehicles if item is not None])
     
-    async def get_vehicles_stats(self, wg_player_id: int, db: AsyncSession):
+    async def get_vehicles_stats(self, wg_player_id: int, db: AsyncSession, actual: Optional[bool] = None, tank_id: Optional[int] = None):
         """Method to get all actual vehicle statistics from DB"""
         query = (
             select(VehiclesStats)
             .where(VehiclesStats.wg_player_id == wg_player_id)
-            .where(VehiclesStats.actual == True)
-            .order_by(VehiclesStats.tank_battles.desc())
         )
+
+        filters = []
+
+        if actual is not None:
+            filters.append(VehiclesStats.actual == actual)
+    
+        if tank_id is not None:
+            filters.append(VehiclesStats.wg_tank_id == tank_id)
+
+        if filters:
+            query = query.where(and_(*filters))
+
+        query = query.order_by(VehiclesStats.tank_battles.desc())
+
         result = await db.execute(query)
         return result.scalars().all()

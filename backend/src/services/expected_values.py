@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, asc, desc, func
 from core.config import WARGAMING_API_KEY
 from models.expected_values import Tank
+from repository.expected_values import ExpectedValuesRepository as repository
 
 
 class ExpectedValuesService:
@@ -146,3 +147,7 @@ class ExpectedValuesService:
             "total_pages": (total_count + limit - 1) // limit,
             "data": tanks_list,
         }
+    
+    async def return_one_tank(self, db: AsyncSession, wg_tank_id: int):
+        expected_values = await repository().get_values_by_wg_id(db, wg_tank_id)
+        return expected_values

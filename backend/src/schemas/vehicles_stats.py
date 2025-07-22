@@ -9,3 +9,4 @@ class VehicleStatsSchema(BaseModel):
     tank_wn8: float
     avg_frag: float
     avg_winrate: float
+    actual: bool

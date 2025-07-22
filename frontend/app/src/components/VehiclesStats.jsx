@@ -12,20 +12,20 @@ import {
   TableRow,
   TableSortLabel,
 } from "@mui/material";
+import VehiclesStatsDetailContainer from "./VehiclesStatsDetailContainer";
 import { useGetVehiclesStats } from "../hooks/useGetVehiclesStats";
 import { useUpdateVehiclesStats } from "../hooks/useUpdateVehiclesStats";
 import { useTanks } from "../hooks/useTanks";
 
-const VehiclesStats = ({ player }) => {
-
+const VehiclesStats = ({ player, selectedTank, setSelectedTank }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
-  
+
   const {
     vehiclesStats,
     loading: statsLoading,
     error: statError,
-  } = useGetVehiclesStats(player.wg_player_id, refreshTrigger);
+  } = useGetVehiclesStats(player.wg_player_id, true, undefined, refreshTrigger);
 
   const {
     tanks,
@@ -88,6 +88,15 @@ const VehiclesStats = ({ player }) => {
     }
   });
 
+  if (selectedTank)
+    return (
+      <VehiclesStatsDetailContainer
+        player={player}
+        tank={selectedTank}
+        onBack={() => setSelectedTank(null)}
+      />
+    );
+
   return (
     <TableContainer component={Paper}>
       <Box
@@ -107,7 +116,7 @@ const VehiclesStats = ({ player }) => {
         >
           {isUpdating ? <CircularProgress size={24} /> : "Update Tanks"}
         </Button>
-        </Box>
+      </Box>
       <Table aria-label="vehicles stats table">
         <TableHead>
           <TableRow>
@@ -188,7 +197,12 @@ const VehiclesStats = ({ player }) => {
         </TableHead>
         <TableBody>
           {mergedList.map((stat) => (
-            <TableRow key={stat.wg_tank_id}>
+            <TableRow
+              key={stat.wg_tank_id}
+              hover
+              onClick={() => setSelectedTank(stat)}
+              sx={{ cursor: "pointer" }}
+            >
               <TableCell>
                 <img src={stat.contour_icon} alt={stat.name} />
               </TableCell>
