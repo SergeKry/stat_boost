@@ -7,7 +7,7 @@ from api.routes import (healthcheck,
                         wg_player,
                         players,
                         vehicles_stats,)
-from scheduler import start_scheduler
+from scheduler import start_scheduler, cron_update_expected_values, cron_update_players_vehicles_stats
 
 app = FastAPI()
 
@@ -27,4 +27,6 @@ app.include_router(vehicles_stats.router, prefix="/vehicles-stats", tags=["Vehic
 
 @app.on_event("startup")
 async def startup_event():
+    await cron_update_expected_values()
+    await cron_update_players_vehicles_stats()
     start_scheduler()
