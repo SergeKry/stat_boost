@@ -9,6 +9,9 @@ router = APIRouter()
 
 @router.post("/{wg_player_id}")
 async def update_vehicles_stats(wg_player_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Update vehicle stats for a given player
+    """
     updated_vehicles = await Service().update_vehicles_stats(wg_player_id, db)
     return {"updated_vehicles": updated_vehicles}
 
@@ -20,6 +23,9 @@ async def get_vehicles_stats(
     tank_id: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db)
     ):
+    """
+    Get vehicle stats for a given player
+    """
     vehicles_statistics = await Service().get_vehicles_stats(wg_player_id=wg_player_id, actual=actual, tank_id=tank_id, db=db)
     fromatted_stats = {wg_player_id: [VehicleStatsSchema(**stat.__dict__) for stat in vehicles_statistics]}
     return fromatted_stats

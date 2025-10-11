@@ -11,6 +11,7 @@ from core.database import Base, engine
 from models import (
     expected_values,
     players,
+    player_stats,
     vehicles_stats,
     )
 
