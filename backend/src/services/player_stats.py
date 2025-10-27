@@ -18,7 +18,7 @@ class PlayerStatsService:
 
     async def update_player_stats(self, wg_player_id: int):
         """
-        Update player statistics and  set the old record as is_active=False.
+        Update player statistics and set the old record as is_active=False.
         Creates a new DB entry if player number of battles is different from the old one.
         """
         latest_stat = await self.repo.get_actual(wg_player_id)
