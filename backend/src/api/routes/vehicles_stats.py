@@ -27,5 +27,5 @@ async def get_vehicles_stats(
     Get vehicle stats for a given player
     """
     vehicles_statistics = await Service().get_vehicles_stats(wg_player_id=wg_player_id, actual=actual, tank_id=tank_id, db=db)
-    fromatted_stats = {wg_player_id: [VehicleStatsSchema(**stat.__dict__) for stat in vehicles_statistics]}
-    return fromatted_stats
+    formatted_stats = {wg_player_id: [VehicleStatsSchema(**stat.__dict__) for stat in vehicles_statistics]}
+    return formatted_stats

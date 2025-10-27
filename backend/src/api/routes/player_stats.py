@@ -22,4 +22,6 @@ async def get_player_stats(
     db: AsyncSession = Depends(get_db)
     ):
     """Get Player's Statistic"""
-    pass
+    player_stats = await Service(db).get_player_stats(wg_player_id, actual)
+    formatted_stats = {wg_player_id: [PlayerStatsSchema(**stat.__dict__) for stat in player_stats]}
+    return formatted_stats

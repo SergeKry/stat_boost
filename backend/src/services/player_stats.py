@@ -1,7 +1,10 @@
+from typing import Optional
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from repository.player_stats import PlayerStatsRepository
 from services.wg_player import WgPlayerIdService as WgPlayerService
 from services.vehicles_stats import VehiclesStatsService
+from models.player_stats import PlayerStats
 from utils.wn8_utils import calculate_players_wn8
 
 class PlayerStatsService:
@@ -45,5 +48,23 @@ class PlayerStatsService:
             await self.session.commit()
         return latest_stat
 
-    async def get_player_stats(self, wg_player_id: int):
-        pass
+    async def get_player_stats(self, wg_player_id: int, actual: Optional[bool] = None):
+        """
+        Get player statistics
+        """
+        query = (
+            select(PlayerStats)
+            .where(PlayerStats.wg_player_id == wg_player_id)
+        )
+        filters = []
+
+        if actual is not None:
+            filters.append(PlayerStats.is_actual == actual)
+        
+        if filters:
+            query = query.where(and_(*filters))
+        
+        query = query.order_by(PlayerStats.player_battles.desc())
+        
+        result = await self.session.execute(query)
+        return result.scalars().all()
