@@ -15,6 +15,7 @@ import {
 import VehiclesStatsDetailContainer from "./VehiclesStatsDetailContainer";
 import { useGetVehiclesStats } from "../hooks/useGetVehiclesStats";
 import { useUpdateVehiclesStats } from "../hooks/useUpdateVehiclesStats";
+import { useUpdatePlayerStats } from "../hooks/useUpdatePlayerStats";
 import { useTanks } from "../hooks/useTanks";
 
 const VehiclesStats = ({ player, selectedTank, setSelectedTank }) => {
@@ -41,6 +42,14 @@ const VehiclesStats = ({ player, selectedTank, setSelectedTank }) => {
     updateSuccess,
     updateMessage,
   } = useUpdateVehiclesStats();
+
+  const {
+    updateStats: updatePlayerStats,
+    loading: updatePlayerLoading,
+    error: updatePlayerError,
+    success: updatePlayerSuccess,
+    message: updatePlayerMessage,
+  } = useUpdatePlayerStats();
 
   const [sortBy, setSortBy] = useState("tank_battles"); // Default sort column
   const [order, setOrder] = useState("desc"); // Sorting order
@@ -73,6 +82,7 @@ const VehiclesStats = ({ player, selectedTank, setSelectedTank }) => {
   const handleUpdateStats = async () => {
     setIsUpdating(true);
     await updateStats(player.wg_player_id);
+    await updatePlayerStats(player.wg_player_id);
     setIsUpdating(false);
     setRefreshTrigger((prev) => !prev);
   };

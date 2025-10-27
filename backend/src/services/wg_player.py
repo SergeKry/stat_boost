@@ -55,3 +55,13 @@ class WgPlayerIdService:
             return {"error": f"HTTP error: {e.response.status_code}"}
         except httpx.RequestError as e:
             return {"error": f"Request error: {str(e)}"}
+    
+    async def get_player_battles(self, wg_player_id: int) -> int:
+        player_details = await self.get_player_details(wg_player_id)
+
+        # Try to extract player_battles safely
+        try:
+            player_battles = player_details["statistics"]["random"]["battles"]
+        except (KeyError, TypeError, ValueError):
+            return None
+        return player_battles

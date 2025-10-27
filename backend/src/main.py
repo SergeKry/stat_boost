@@ -2,12 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
-from api.routes import (healthcheck,
-                        expected_values,
-                        wg_player,
-                        players,
-                        vehicles_stats,)
-from scheduler import start_scheduler, cron_update_expected_values, cron_update_players_vehicles_stats
+from api.routes import (
+    healthcheck,
+    expected_values,
+    wg_player,
+    players,
+    vehicles_stats,
+    player_stats,
+)
+from scheduler import start_scheduler, cron_update_expected_values, cron_update_players_vehicles_stats, cron_update_players_stats
 
 app = FastAPI()
 
@@ -24,9 +27,11 @@ app.include_router(expected_values.router, prefix="/expected-values", tags=["Exp
 app.include_router(wg_player.router, prefix="/wg_player", tags=["WG Player ID"])
 app.include_router(players.router, prefix="/players", tags=["Players"])
 app.include_router(vehicles_stats.router, prefix="/vehicles-stats", tags=["Vehicles Stats"])
+app.include_router(player_stats.router, prefix="/player-stats", tags=["Player Stats"])
 
 @app.on_event("startup")
 async def startup_event():
     await cron_update_expected_values()
     await cron_update_players_vehicles_stats()
+    await cron_update_players_stats()
     start_scheduler()

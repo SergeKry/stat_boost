@@ -2,7 +2,6 @@ import { Box, Container, Typography } from "@mui/material";
 import PlayerData from "./PlayerData";
 import LatestRankChange from "./LatestRankChange";
 import StatisticsChart from "./StatisticsChart";
-import SomethingElseChart from "./SomethingElseChart";
 import { formatTimestamp } from "../utils/formatTimestamp";
 import Grid from '@mui/material/Grid2';
 
@@ -14,9 +13,8 @@ function PlayerDashboard({ player }) {
             <PlayerData player={player} />
         </Grid>
         <Grid size={7} sx={{ display: "flex", flexDirection: "column", gap: 2, height: "100%" }}>
-            <LatestRankChange />
+            <LatestRankChange player={player} />
             <StatisticsChart />
-            <SomethingElseChart />
         </Grid>
       </Grid>
     </>
