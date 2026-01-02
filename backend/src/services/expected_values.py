@@ -63,7 +63,10 @@ class ExpectedValuesService:
         counter = 0
         for item in tanks_list:
             tank_data = tanks_list.get(item)
-            result = await db.execute(select(Tank).where(Tank.wg_tank_id == tank_data['tank_id']))
+            try:
+                result = await db.execute(select(Tank).where(Tank.wg_tank_id == tank_data['tank_id']))
+            except:
+                continue
             tank = result.scalars().first()
             if tank:
                 await self.update_tank(tank, tank_data)
