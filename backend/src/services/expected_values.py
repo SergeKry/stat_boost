@@ -1,4 +1,5 @@
 import httpx
+import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, asc, desc, func
 from core.config import WARGAMING_API_KEY
@@ -7,6 +8,7 @@ from repository.expected_values import ExpectedValuesRepository as repository
 
 
 class ExpectedValuesService:
+    logger = logging.getLogger(__name__)
     """Service class to fetch data from WG api and XVM api and update database with expected tank values"""
     xvm_expected_url = 'https://static.modxvm.com/wn8-data-exp/json/wg/wn8exp.json'
     wg_vehicles_url = 'https://api.worldoftanks.eu/wot/encyclopedia/vehicles/'
@@ -65,7 +67,8 @@ class ExpectedValuesService:
             tank_data = tanks_list.get(item)
             try:
                 result = await db.execute(select(Tank).where(Tank.wg_tank_id == tank_data['tank_id']))
-            except:
+            except Exception:
+                self.logger.exception("Failed to fetch tank %s from DB; raw tank_data=%s", item, tank_data)
                 continue
             tank = result.scalars().first()
             if tank:
